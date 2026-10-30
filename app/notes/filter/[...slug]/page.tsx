@@ -2,6 +2,8 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import { fetchNotes } from '../../../../lib/api';
 import Notes from './Notes.client';
 import { Metadata } from 'next';
+import { connection } from 'next/server';
+import { Suspense } from 'react';
 
 interface PageProps {
   params: Promise<{
@@ -40,6 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export const instant = false;
   
 export default async function NotesPage({ params }: PageProps) {
+  await connection();
   const resolveParams = await params;
   const slug = resolveParams?.slug || [];
 

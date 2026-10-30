@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { register , RegisterRequest} from '@/lib/api/clientApi'
+import { register } from '@/lib/api/clientApi'//RegisterRequest
 import { useAuth } from '@/lib/store/auth-store'
 //import { LoginRequest } from '@/types/user'
 import { useRouter } from 'next/navigation'
 import css from './SignUpPage.module.css'
+import { UserResponse } from '@/lib/api/serverApi'
 
 
 /*export interface RegisterRequest {
@@ -34,8 +35,8 @@ const Register = () => {
       console.log(" НА СЕРВЕР:", registerData)
         
         try {
-          const res = await register(registerData)
-          if (res) setAuth(res)
+          const res = await register(registerData) as unknown as UserResponse
+          if (res) { setAuth(res) }
           router.replace('/profile')
           router.refresh()
             console.log('res', res)

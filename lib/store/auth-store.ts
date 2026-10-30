@@ -1,5 +1,14 @@
 import { create } from 'zustand'
-import { UserResponse } from '../../types/user'
+//import { UserResponse } from '../../types/user'
+
+interface UserResponse {
+  id: string
+  email: string
+  username: string
+  role: string
+  createdAt: string
+  updatedAt: string
+}
 
 interface AuthStore {
   isAuth: boolean

@@ -1,5 +1,5 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
-import { fetchNoteById } from '../../../../lib/api';
+import { fetchNoteById } from '@/lib/api/serverApi';
 import NoteDetailsClient from './NoteDetails.client';
 import type { Note } from '../../../../types/note'; 
 import { Metadata } from 'next';
@@ -9,6 +9,9 @@ interface PageProps{
     params: Promise<{ id: string }>;
 }
 
+const formatDescription = (content: string): string => {
+  return content.length > 30 ? `${content.slice(0, 30)}...` : content;
+};
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
@@ -19,19 +22,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     if (!note) {
       return { title: 'Note not found | NoteHub' };
     }
+
+    const shortDescription = formatDescription(note.content);  
+
     return {
       title: `${note.title}`,
-      description: `${note.content.slice(0, 30)}...`,
+      description: shortDescription,
       openGraph: {
         title: `Note: ${note.title}`,
-        description: note.content.slice(0, 30),
+        description: shortDescription,
         url: 'https://08-zustand-puce-theta.vercel.app',
         images: [
           {
             url: 'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg',
             width: 1200,
             height: 630,
-            alt: note.content.slice(0, 30),
+            alt: shortDescription,
           }
         ]
       }
@@ -55,7 +61,7 @@ export default async function NoteDetailsPage(
   try{    
   await queryClient.prefetchQuery <Note>({
     queryKey: ['note', id] as const,
-    queryFn: () => fetchNoteById(id) as unknown as Promise <Note>,
+    queryFn: () => fetchNoteById(id) ,
   });
   } catch (error) {
     console.error('Server prefetch failed during build:', error);

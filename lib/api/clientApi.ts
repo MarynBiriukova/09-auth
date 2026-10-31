@@ -30,14 +30,14 @@ export interface LoginRequest {
 
 export interface RegisterRequest {
   email: string
-  name?: string
+  username: string
   password: string
 }
 
 export interface RegisterResponse{
-  user: User
-  accessToken: string
-  refreshToken: string
+  username: string
+  email: string   //accessToken: string
+  avatar: string  //refreshToken: string
 }
 
 export interface SessionResponse {
@@ -52,6 +52,10 @@ interface FetchNotesResponse {
 export interface UpdateProfileRequest{
   username: string
   email: string
+}
+
+export interface RefreshSessionResponse {
+  message: string
 }
 
 
@@ -97,13 +101,13 @@ export const createNote = async (newNoteData: NewNoteData): Promise<Note> => {
   return res.data;
 }
 
-export const logout = async () => {
-  const { data } = await api.post<SessionResponse>(`/auth/logout`)
-  return data
+export const logout = async (): Promise<void> => {
+  await api.post<void>(`/auth/logout`) //const { data } = 
+  //return data
 }
 
 export const login = async (user: LoginRequest) => {
-  const { data } = await api.post<UserResponse>(`/auth/login`, user)
+  const { data } = await api.post<RegisterResponse>(`/auth/login`, user)
   return data
 }
 
@@ -114,12 +118,16 @@ export const register = async (user: RegisterRequest): Promise<RegisterResponse>
   return data
 }
 
-export const checkSession = async () => {
-  const { data } = await api.get<SessionResponse>(`/auth/session`)
-  return data.success
+export const checkSession = async (): Promise<boolean> => {
+  try {
+  await api.get<RefreshSessionResponse>(`/auth/session`) //const { data } = 
+    return true
+  } catch (error) {
+    return false
+  }
 }
 
-export const getMe = async () => {
+export const getMe = async (): Promise<UserResponse> => {
   const { data } = await api.get<UserResponse>(`/users/me`)
   return data
 }

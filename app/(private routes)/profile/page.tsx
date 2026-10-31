@@ -2,14 +2,15 @@ import { getMe } from '@/lib/api/serverApi'
 import css from './ProfilePage.module.css'
 import Image from 'next/image'
 //import { headers } from 'next/headers'
-import { connection } from 'next/server'
+//import { connection } from 'next/server'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+import Link from 'next/link'
 
 
 
 export async function generateMetadata(): Promise<Metadata> {
-    await connection()
+    //await connection()
     try {
         const user = await getMe()
 
@@ -46,7 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 
 const ProfileUserData = async () => {
-    await connection(); 
+    //await connection(); 
     const user = await getMe()
 
     return (
@@ -78,9 +79,9 @@ const Profile = async () => {
         <div className={css.profileCard}>
       <div className={css.header}>
 	     <h1 className={css.formTitle}>Profile Page</h1>
-	     <a href="/profile/edit" className={css.editProfileButton}>
+	     <Link href="/profile/edit" className={css.editProfileButton}>
 	       Edit Profile
-	     </a>
+	     </Link>
                 </div>
                 <Suspense fallback={<p>Loading user data...</p>}>
                 <ProfileUserData />

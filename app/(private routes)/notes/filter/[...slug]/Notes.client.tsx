@@ -19,7 +19,7 @@ import Loader from '../../../../../components/Loader/Loader';
 import ErrorMessage from '../../../../../components/ErrorMessage/ErrorMessage';
 
 
-import { fetchNotes} from '../../../../../lib/api';
+import { fetchNotes} from '../../../../../lib/api/clientApi';
 import { Toaster, toast } from 'react-hot-toast';
 
 const toastConfig = {

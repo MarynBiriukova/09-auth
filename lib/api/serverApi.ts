@@ -3,23 +3,23 @@
 //getMe
 //checkSession
 import { type AxiosResponse } from 'axios';
-import api, { ApiError } from '@/lib/api/api';
+import api from '@/lib/api/api';//, { ApiError }
 import { cookies } from 'next/headers';
 import type { Note } from '@/types/note'; 
-import { Cookie } from 'next/font/google';
-import { nextServer } from './nextServer';
+//import { Cookie } from 'next/font/google';
+//import { nextServer } from './nextServer';
 //import axios, { type AxiosResponse } from 'axios';
 //import { SessionResponse, UserResponse } from '@/types/user'
 import { type User } from '@/types/user';
 
-export interface UserResponse {
+/*export interface UserResponse {
   id: string
   email: string
   username: string
   role: string
   createdAt: string
   updatedAt: string
-}
+}*/
 
 export interface SessionResponse {
   success: boolean
@@ -84,15 +84,6 @@ export const getMe = async () => {
   return response.data;
 };
 
-/*export const getServerMe = async () => {
-  const cs = await cookies()
-
-  const { data } = await nextServerInstance.get<UserResponse>(`/auth/me`, {
-    headers: { cookie: cs.toString() },
-  })
-  return data
-}*/
-
 export const checkSession = async (): Promise<AxiosResponse<SessionResponse>> => {
   const headers = await getServerHeader();
   const response = await api.get<SessionResponse>('/auth/session', {
@@ -100,12 +91,3 @@ export const checkSession = async (): Promise<AxiosResponse<SessionResponse>> =>
   });
   return response;
 };
-
-
-/*export const checkServerSession = async () => {
-  const cs = await cookies()
-  const res = await nextServerInstance.get<SessionResponse>(`/auth/session`, {
-    headers: { cookie: cs.toString() },
-  })
-  return res
-}*/

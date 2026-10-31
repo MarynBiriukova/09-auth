@@ -1,7 +1,7 @@
 import { create } from 'zustand'
-//import { UserResponse } from '../../types/user'
+import { UserResponse } from '@/lib/api/clientApi'
 
-interface UserResponse {
+/*interface UserResponse {
   id: string
   email: string
   username: string
@@ -9,10 +9,10 @@ interface UserResponse {
   avatar?: string
   createdAt: string
   updatedAt: string
-}
+}*/
 
 interface AuthStore {
-  isAuth: boolean
+  isAuthenticated: boolean
   user: UserResponse | null
   setAuth: (user: UserResponse) => void
   clearAuth: () => void
@@ -20,9 +20,9 @@ interface AuthStore {
 
 export const useAuth = create<AuthStore>()((set) => {
   return {
-    isAuth: false,
+    isAuthenticated: false,
     user: null,
-    setAuth: (user: UserResponse) => set({ user, isAuth: true }),
-    clearAuth: () => set({ isAuth: false, user: null }),
+    setAuth: (user: UserResponse) => set({ user, isAuthenticated: true }),
+    clearAuth: () => set({ isAuthenticated: false, user: null }),
   }
 })

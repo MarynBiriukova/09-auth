@@ -10,16 +10,16 @@ import { useDebouncedCallback } from 'use-debounce'
 import { useQuery, keepPreviousData} from '@tanstack/react-query';// useMutation,, useQueryClient 
 import { useState, useEffect } from 'react'
 
-import NoteList from '../../../../components/NoteList/NoteList';
-import Pagination from '../../../../components/Pagination/Pagination';
+import NoteList from '../../../../../components/NoteList/NoteList';
+import Pagination from '../../../../../components/Pagination/Pagination';
 //import Modal from '../../../../components/Modal/Modal';
 //import NoteForm from '../../../../components/NoteForm/NoteForm';
-import SearchBox from '../../../../components/SearchBox/SearchBox';
-import Loader from '../../../../components/Loader/Loader';
-import ErrorMessage from '../../../../components/ErrorMessage/ErrorMessage';
+import SearchBox from '../../../../../components/SearchBox/SearchBox';
+import Loader from '../../../../../components/Loader/Loader';
+import ErrorMessage from '../../../../../components/ErrorMessage/ErrorMessage';
 
 
-import { fetchNotes} from '../../../../lib/api';
+import { fetchNotes} from '../../../../../lib/api';
 import { Toaster, toast } from 'react-hot-toast';
 
 const toastConfig = {

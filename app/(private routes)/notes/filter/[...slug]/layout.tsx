@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import Loader from '../../../../components/Loader/Loader'; // Укажите правильный путь к вашему лоудеру
+import Loader from '../../../../../components/Loader/Loader'; // Укажите правильный путь к вашему лоудеру
 
 export default function FilterLayout({
   children,

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { login } from '@/lib/api/clientApi'
-import { useAuth } from '@/lib/store/auth-store'
+import { useAuth } from '@/lib/store/authStore'
 //import { LoginRequest } from '@/lib/types'
 import { useRouter } from 'next/navigation'
 import css from './SignInPage.module.css'

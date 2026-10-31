@@ -2,7 +2,7 @@
 
 import { useState } from "react"//, useEffect
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/lib/store/auth-store"
+import { useAuth } from "@/lib/store/authStore"
 import { updateMe } from "@/lib/api/clientApi"//, type UpdateProfileRequest 
 import css from './EditProfilePage.module.css'
 import Image from "next/image"

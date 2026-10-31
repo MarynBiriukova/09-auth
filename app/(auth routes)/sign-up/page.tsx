@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { register } from '@/lib/api/clientApi'//RegisterRequest
-import { useAuth } from '@/lib/store/auth-store'
+import { useAuth } from '@/lib/store/authStore'
 //import { LoginRequest } from '@/types/user'
 import { useRouter } from 'next/navigation'
 import css from './SignUpPage.module.css'

@@ -1,6 +1,6 @@
 'use client'
 import { logout } from '@/lib/api/clientApi'
-import { useAuth } from '../../lib/store/auth-store'
+import { useAuth } from '../../lib/store/authStore'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import css from '../AuthNavigation/AuthNavigation.module.css'

@@ -9,10 +9,6 @@ import axios, { type AxiosResponse } from 'axios';
 import type { NewNoteData, Note } from '../../types/note';
 import api, { ApiError } from '@/lib/api/api';
 import { User } from '@/types/user'
-//import type {
-//  SessionResponse, LoginRequest, UserResponse,
-//  RegisterRequest
-// } from '../../types/user';
 
 export interface UserResponse {
   id: string
@@ -30,7 +26,7 @@ export interface LoginRequest {
 
 export interface RegisterRequest {
   email: string
-  username: string
+  //username: string
   password: string
 }
 
@@ -107,7 +103,7 @@ export const logout = async (): Promise<void> => {
 }
 
 export const login = async (user: LoginRequest) => {
-  const { data } = await api.post<RegisterResponse>(`/auth/login`, user)
+  const { data } = await api.post<User>(`/auth/login`, user)
   return data
 }
 
@@ -123,16 +119,17 @@ export const checkSession = async (): Promise<boolean> => {
   await api.get<RefreshSessionResponse>(`/auth/session`) //const { data } = 
     return true
   } catch (error) {
+    console.error(error)
     return false
   }
 }
 
-export const getMe = async (): Promise<UserResponse> => {
-  const { data } = await api.get<UserResponse>(`/users/me`)
+export const getMe = async (): Promise<User> => {
+  const { data } = await api.get<User>(`/users/me`)
   return data
 }
 
-export const updateMe = async (userData: UpdateProfileRequest): Promise<UserResponse> => {
-  const { data } = await api.patch<UserResponse>(`/users/me`, userData)
+export const updateMe = async (userData: UpdateProfileRequest): Promise<User> => {
+  const { data } = await api.patch<User>(`/users/me`, userData)
   return data
 }

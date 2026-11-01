@@ -19,24 +19,48 @@ export async function proxy(request: NextRequest) {
     if (refreshToken) {
       // Якщо accessToken відсутній, але є refreshToken — потрібно перевірити сесію навіть для публічного маршруту,
       // адже сесія може залишатися активною, і тоді потрібно заборонити доступ до публічного маршруту.
-      const response = await checkSession();
-      const setCookie = response.headers['set-cookie'];
+      let response;
+      try{
+        response = await checkSession();
+      } catch (error) {
+        console.error(error);
+        response = null;
+      }
 
+      const isSessionActive = !!(response && response.data && response.data.success);
+      const setCookie = response?.headers?.['set-cookie'];
+      
       if (setCookie) {
         const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
+
+        const updatedCookieNames = new Set<string>();
+
         for (const cookieStr of cookieArray) {
-		  const parsed = parseSetCookie(cookieStr);
+          const parsed = parseSetCookie(cookieStr);
             
           if (parsed.value) {
-			cookieStore.set(parsed.name, parsed.value, parsed);
-		  }          
+            cookieStore.set(parsed.name, parsed.value, parsed);
+            updatedCookieNames.add(parsed.name);
           }
+        }
           
-          const isSessionActive = response.data.success;
+        //const isSessionActive = response.data.success;
         
+        if (updatedCookieNames.has('accessToken') && !updatedCookieNames.has('refreshToken')) {
+          cookieStore.delete('refreshToken');
+        }
+        if (updatedCookieNames.has('refreshToken') && !updatedCookieNames.has('accessToken')) {
+          cookieStore.delete('accessToken');
+        }
+      } else if (!isSessionActive) {
+        cookieStore.delete('accessToken');
+        cookieStore.delete('refreshToken');
+      }  
         // Якщо сесія все ще активна:
+      if (isSessionActive) {
         // для публічного маршруту — виконуємо редірект на головну.
-        if (isPublicRoute && isSessionActive) {
+        if (isPublicRoute)
+        {
           return NextResponse.redirect(new URL('/', request.url), {
             headers: {
               Cookie: cookieStore.toString(),

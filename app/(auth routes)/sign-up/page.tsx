@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/store/authStore'
 //import { LoginRequest } from '@/types/user'
 import { useRouter } from 'next/navigation'
 import css from './SignUpPage.module.css'
-import { UserResponse } from '@/lib/api/serverApi'
+import { UserResponse } from '@/lib/api/clientApi'//server
 
 
 /*export interface RegisterRequest {

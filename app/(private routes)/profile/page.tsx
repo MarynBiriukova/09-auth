@@ -4,7 +4,7 @@ import Image from 'next/image'
 //import { headers } from 'next/headers'
 //import { connection } from 'next/server'
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
+//import { Suspense } from 'react'
 import Link from 'next/link'
 
 
@@ -17,6 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
         if (!user) {
             return {
                 title: 'Profile | Loading...',
+                description: 'User profile | Loading...'
             }
         }
 
@@ -49,6 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const ProfileUserData = async () => {
     //await connection(); 
     const user = await getMe()
+    if(!user) return <p>Failed to load user profile</p>
 
     return (
         <>
@@ -83,12 +85,15 @@ const Profile = async () => {
 	       Edit Profile
 	     </Link>
                 </div>
-                <Suspense fallback={<p>Loading user data...</p>}>
+                
                 <ProfileUserData />
-                </Suspense>
+                
                 </div>
      
 </main>)
 }
 
 export default Profile
+/*
+<Suspense fallback={<p>Loading user data...</p>}></Suspense>
+*/

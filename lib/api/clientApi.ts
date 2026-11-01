@@ -7,17 +7,10 @@
 
 import axios, { type AxiosResponse } from 'axios';
 import type { NewNoteData, Note } from '../../types/note';
-import api, { ApiError } from '@/lib/api/api';
+import api from '@/lib/api/api';//, { ApiError }
 import { User } from '@/types/user'
 
-export interface UserResponse {
-  id: string
-  email: string
-  username: string
-  role: string
-  createdAt: string
-  updatedAt: string
-}
+export type UserResponse = User
 
 export interface LoginRequest {
   email: string
@@ -33,7 +26,7 @@ export interface RegisterRequest {
 export interface RegisterResponse{
   username: string
   email: string   //accessToken: string
-  avatar: string  //refreshToken: string
+  avatar?: string  //refreshToken: string
 }
 
 export interface SessionResponse {
@@ -47,7 +40,7 @@ interface FetchNotesResponse {
 
 export interface UpdateProfileRequest{
   username: string
-  email: string
+  //email: string
 }
 
 export interface RefreshSessionResponse {
@@ -108,21 +101,15 @@ export const login = async (user: LoginRequest) => {
 }
 
 export const register = async (user: RegisterRequest): Promise<RegisterResponse> => {
-  const { data } = await api.post<RegisterResponse>(`/auth/register`, user, {
-    withCredentials: true,
-  })
+  const { data } = await api.post<RegisterResponse>(`/auth/register`, user)
   return data
 }
 
-export const checkSession = async (): Promise<boolean> => {
-  try {
-  await api.get<RefreshSessionResponse>(`/auth/session`) //const { data } = 
-    return true
-  } catch (error) {
-    console.error(error)
-    return false
-  }
-}
+
+export const checkSession = async (): Promise<AxiosResponse<RefreshSessionResponse>> => {
+  const response = await api.get<RefreshSessionResponse>('/auth/session');
+  return response;
+};
 
 export const getMe = async (): Promise<User> => {
   const { data } = await api.get<User>(`/users/me`)

@@ -3,6 +3,7 @@
 import { checkSession, getMe } from '@/lib/api/clientApi'
 import { useAuth } from '@/lib/store/authStore'
 import { useEffect, useRef } from 'react'
+import { UserResponse } from '@/lib/api/clientApi' 
 
 interface Props {
   children: React.ReactNode
@@ -20,16 +21,18 @@ const AuthProvider = ({ children }: Props) => {
     hasRun.current = true
 
     const fetchSession = async () => {
-      try{
-      const isAuth = await checkSession()
-      if (isAuth) {
+      try {
+        const response = await checkSession()
+
+      if (response.status ===200) {
         const user = await getMe()
+
         setAuth(user)
       } else {
         clearAuth()
         }
       } catch (error) {
-        console.error('Error auth or З`єднання з server')
+        console.error('Error auth or connection with server', error)
         clearAuth()
       }
     }

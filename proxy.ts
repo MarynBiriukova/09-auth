@@ -15,31 +15,50 @@ export async function proxy(request: NextRequest) {
   const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route));
   const isPrivateRoute = privateRoutes.some((route) => pathname.startsWith(route));
 
+  let isSessionActive = false;
+
   if (!accessToken) {
     if (refreshToken) {
       // Якщо accessToken відсутній, але є refreshToken — потрібно перевірити сесію навіть для публічного маршруту,
       // адже сесія може залишатися активною, і тоді потрібно заборонити доступ до публічного маршруту.
       let response;
-      try{
+      try {
         response = await checkSession();
       } catch (error) {
         console.error(error);
         response = null;
       }
 
-      const isSessionActive = !!(response && response.data && response.data.success);
+      isSessionActive = !!(response && response.data && response.data.success);
       const setCookie = response?.headers?.['set-cookie'];
+      const updatedCookieNames = new Set<string>();
       
-      if (setCookie) {
+      if (isSessionActive && setCookie) {
         const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
-
-        const updatedCookieNames = new Set<string>();
 
         for (const cookieStr of cookieArray) {
           const parsed = parseSetCookie(cookieStr);
             
-          if (parsed.value) {
-            cookieStore.set(parsed.name, parsed.value, parsed);
+          if (parsed && typeof parsed.value === 'string') {
+
+            const { name, value, sameSite, ...restOptions } = parsed;
+
+            let validSameSite: 'lax' | 'strict' | 'none' | undefined = undefined;
+            if (typeof sameSite === 'string') {
+              const lower = sameSite.toLowerCase();
+
+              if (lower === 'lax' || lower === 'strict' || lower === 'none') {
+                validSameSite = lower;
+              }
+            } else if (sameSite === true) {
+              validSameSite = 'strict';
+            }
+
+            const options = {
+              ...restOptions,
+              ...(validSameSite ? { sameSite: validSameSite } : {})
+            };
+            cookieStore.set(name, value, options);
             updatedCookieNames.add(parsed.name);
           }
         }
@@ -55,32 +74,30 @@ export async function proxy(request: NextRequest) {
       } else if (!isSessionActive) {
         cookieStore.delete('accessToken');
         cookieStore.delete('refreshToken');
-      }  
-        // Якщо сесія все ще активна:
+      }
+      // Якщо сесія все ще активна:
       if (isSessionActive) {
         // для публічного маршруту — виконуємо редірект на головну.
-        if (isPublicRoute)
-        {
-          return NextResponse.redirect(new URL('/', request.url), {
-            headers: {
-              Cookie: cookieStore.toString(),
-            },
-          });
+        if (isPublicRoute) {
+          const responseRedirect = NextResponse.redirect(new URL('/', request.url));
+          //cookieStore -> заголовки відповіді для браузера
+          applyCookieStoreToResponse(cookieStore, responseRedirect);
+          return responseRedirect;
+           
         }
-        // для приватного маршруту — дозволяємо доступ
         if (isPrivateRoute) {
-          return NextResponse.next({
-            headers: {
-              Cookie: cookieStore.toString(),
-            },
-          });
+          const responseNext = NextResponse.next();
+          applyCookieStoreToResponse(cookieStore, responseNext);
+          return responseNext;
         }
       }
     }
-    // Якщо refreshToken або сесії немає:
+
+    // if refreshToken or not session
+
     // публічний маршрут — дозволяємо доступ
     if (isPublicRoute) {
-        return NextResponse.next();
+      return NextResponse.next();
     }
 
     // приватний маршрут — редірект на сторінку входу
@@ -89,16 +106,24 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // Якщо accessToken існує:
+// Якщо accessToken існує:
   // публічний маршрут — виконуємо редірект на головну
   if (isPublicRoute) {
     return NextResponse.redirect(new URL('/', request.url));
   }
-  // приватний маршрут — дозволяємо доступ
-  if (isPrivateRoute) {
-    return NextResponse.next();
+
+// для приватного маршруту — дозволяємо доступ
+        if (isPrivateRoute) {
+          return NextResponse.next();
+        }
+      }
+function applyCookieStoreToResponse(cookieStore: any, response: NextResponse) {
+  
+  for (const cookie of cookieStore.getAll()) {
+    response.cookies.set(cookie.name, cookie.value, cookie);
   }
-}
+} 
+  
 
 export const config = {
   matcher: ['/profile/:path*','/notes/:path*' ,'/sign-in', '/sign-up'],

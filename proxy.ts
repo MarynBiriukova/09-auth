@@ -34,39 +34,27 @@ export async function proxy(request: NextRequest) {
           const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
           for (const cookieStr of cookieArray) {
             const parsed = parseSetCookie(cookieStr);
+
             
-               if (parsed.value && parsed.name) {
-              cookieStore.set(parsed.name, parsed.value, parsed);
-              response.cookies.set(parsed.name, parsed.value, {
+            if (parsed.value && parsed.name) {
+                 
+              const cOptions = {
                 path: parsed.path || '/',
                 httpOnly: parsed.httpOnly,
                 secure: parsed.secure,
-                sameSite: parsed.sameSite as  boolean | "lax" | "strict" | "none" | undefined,
+                sameSite: parsed.sameSite as "lax" | "strict" | "none" | undefined,
                 expires: parsed.expires,
                 maxAge: parsed.maxAge
 
-              });
+              };
+              //cookieStore.set(parsed.name, parsed.value, cOptions);
+              response.cookies.set(parsed.name, parsed.value, cOptions);
             }
           }
-        
-          // Якщо сесія все ще активна:
-          // для публічного маршруту — виконуємо редірект на головну.
-          if (isPublicRoute) {
-            return NextResponse.redirect(new URL('/', request.url), {
-              headers: {
-                Cookie: cookieStore.toString(),
-              },
-            });
-          }
-          // для приватного маршруту — дозволяємо доступ
-          if (isPrivateRoute) {
-            return NextResponse.next({
-              headers: {
-                Cookie: cookieStore.toString(),
-              },
-            });
-          }
+
+          response.headers.set('x-middleware-request-cookie', response.cookies.toString());
         }
+        return response;
       } catch (error) {
         console.error('Session check failed:', axios.isAxiosError(error) ? error.response?.status : error);
         // Якщо сесія недійсна, на приватному маршруті відправляємо на вхід

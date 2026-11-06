@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { parseSetCookie } from 'cookie';
 import { checkSession } from './lib/api/serverApi';
-import axios  from 'axios';//,{AxiosError}
+//import axios  from 'axios';//,{AxiosError}
 
 const privateRoutes = ['/profile', '/notes'];
 const publicRoutes = ['/sign-in', '/sign-up'];
@@ -52,11 +52,11 @@ export async function proxy(request: NextRequest) {
             }
           }
 
-          response.headers.set('x-middleware-request-cookie', response.cookies.toString());
+          //response.headers.set('x-middleware-request-cookie', response.cookies.toString());
         }
         return response;
       } catch (error) {
-        console.error('Session check failed:', axios.isAxiosError(error) ? error.response?.status : error);
+        console.error('Session check failed:',  error);//axios.isAxiosError(error) ? error.response?.status :
         // Якщо сесія недійсна, на приватному маршруті відправляємо на вхід
         const fallbackResponse = isPrivateRoute
           ? NextResponse.redirect(new URL('/sign-in', request.url))
